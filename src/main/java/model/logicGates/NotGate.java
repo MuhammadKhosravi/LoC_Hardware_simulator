@@ -1,4 +1,7 @@
-package model;
+package model.logicGates;
+
+import model.Wire;
+import model.logicGates.Gate;
 
 public class NotGate extends Gate {
 

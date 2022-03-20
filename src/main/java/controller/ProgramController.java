@@ -1,19 +1,22 @@
+/*
 package controller;
 
-import controller.exception.NotModelingTimeException;
+import controller.exception.ModelingErrorException;
 import model.*;
-import view.Regex;
+import model.logicGates.*;
+import view.Statics;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Scanner;
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
 
 public class ProgramController {
     private final static ProgramController instance = new ProgramController();
     private final HashMap<String, Wire> nameWireHashmap = new HashMap<>();
-    private final ArrayList<Gate> gates = new ArrayList<>();
+    private List<RuntimeException> errors = new ArrayList<>();
+
     private boolean is_modeling = false;
     private boolean is_init = false;
     private boolean finish = false;
@@ -22,46 +25,42 @@ public class ProgramController {
         return instance;
     }
 
-    public void run() {
-        Scanner scanner = new Scanner(System.in);
+    public List<Gate> run(List<String> inputs) {
+        final List<Gate> gates = new ArrayList<>();
         HashMap<String, Consumer<Matcher>> regexHashmap = getRegexHashmap();
-        while (!finish) {
-            String inputText = scanner.nextLine();
+        for (String input : inputs) {
             for (String command : regexHashmap.keySet()) {
-                Matcher matcher = Regex.getInstance().getMatcher(inputText, command);
+                Matcher matcher = Statics.getInstance().getMatcher(input, command);
                 if (matcher.find()) {
                     regexHashmap.get(command).accept(matcher);
                 }
             }
-            System.out.println(gates);
-            System.out.println(nameWireHashmap.keySet());
         }
-
     }
 
     private HashMap<String, Consumer<Matcher>> getRegexHashmap() {
         HashMap<String, Consumer<Matcher>> regexHashmap = new HashMap<>();
 
 
-        regexHashmap.put(Regex.getInstance().getGateRegex("and"), this::addAndGate);
-        regexHashmap.put(Regex.getInstance().getGateRegex("or"), this::addOrGate);
-        regexHashmap.put(Regex.getInstance().getGateRegex("xor"), this::addXorGate);
-        regexHashmap.put(Regex.getInstance().getGateRegex("nand"), this::addNandGate);
-        regexHashmap.put(Regex.getInstance().getGateRegex("nor"), this::addNorGate);
-        regexHashmap.put(Regex.getInstance().getGateRegex("not"), this::addNotGate);
+        regexHashmap.put(Statics.getInstance().getGateRegex("and"), this::addAndGate);
+        regexHashmap.put(Statics.getInstance().getGateRegex("or"), this::addOrGate);
+        regexHashmap.put(Statics.getInstance().getGateRegex("xor"), this::addXorGate);
+        regexHashmap.put(Statics.getInstance().getGateRegex("nand"), this::addNandGate);
+        regexHashmap.put(Statics.getInstance().getGateRegex("nor"), this::addNorGate);
+        regexHashmap.put(Statics.getInstance().getGateRegex("not"), this::addNotGate);
 
-        regexHashmap.put(Regex.getInstance().DEF_WIRE, this::defineWire);
+        regexHashmap.put(Statics.getInstance().DEF_WIRE, this::defineWire);
 
-        regexHashmap.put(Regex.getInstance().START_MODEL, this::startModeling);
-        regexHashmap.put(Regex.getInstance().FINISH_MODEL, this::finishModeling);
+        regexHashmap.put(Statics.getInstance().MODEL_START, this::startModeling);
+        regexHashmap.put(Statics.getInstance().MODEL_FINISH, this::finishModeling);
 
-        regexHashmap.put(Regex.getInstance().INIT_START, this::startInit);
-        regexHashmap.put(Regex.getInstance().INIT_FINISH, this::finishInit);
-        regexHashmap.put(Regex.getInstance().INIT_VALUE, this::setInitValue);
+        regexHashmap.put(Statics.getInstance().INIT_START, this::startInit);
+        regexHashmap.put(Statics.getInstance().INIT_FINISH, this::finishInit);
+        regexHashmap.put(Statics.getInstance().INIT_VALUE, this::setInitValue);
 
-        regexHashmap.put(Regex.getInstance().UPDATE, this::updateValue);
+        regexHashmap.put(Statics.getInstance().UPDATE, this::updateValue);
 
-        regexHashmap.put(Regex.getInstance().END, this::end);
+        regexHashmap.put(Statics.getInstance().END, this::end);
 
         return regexHashmap;
     }
@@ -96,8 +95,8 @@ public class ProgramController {
         is_init = true;
     }
 
-    private Gate createGate(Matcher matcher, String type) throws NotModelingTimeException {
-        if (!is_modeling) throw new NotModelingTimeException();
+    private Gate createGate(Matcher matcher, String type) throws ModelingErrorException {
+        if (!is_modeling) throw new ModelingErrorException();
         Wire output = getOutputWire(matcher);
         Wire[] inputs = getInputWires(matcher);
         short delay = getDelay(matcher);
@@ -119,61 +118,63 @@ public class ProgramController {
         }
     }
 
-    private void addNotGate(Matcher matcher) {
+    private Gate addNotGate(Matcher matcher) {
         try {
-            gates.add(createGate(matcher, "not"));
-        } catch (NotModelingTimeException e) {
+            return createGate(matcher, "not");
+        } catch (ModelingErrorException e) {
+            errors.add(e);
         }
 
     }
 
-    private void addNorGate(Matcher matcher) {
+    private Gate addNorGate(Matcher matcher) {
         try {
-            gates.add(createGate(matcher, "nor"));
-        } catch (NotModelingTimeException e) {
-
-        }
-
-    }
-
-    private void addNandGate(Matcher matcher) {
-        try {
-            gates.add(createGate(matcher, "nand"));
-        } catch (NotModelingTimeException e) {
+            return createGate(matcher, "nor");
+        } catch (ModelingErrorException e) {
 
         }
 
     }
 
-    private void addXorGate(Matcher matcher) {
+    private Gate addNandGate(Matcher matcher) {
         try {
-            gates.add(createGate(matcher, "xor"));
-        } catch (NotModelingTimeException e) {
+            return createGate(matcher, "nand");
+        } catch (ModelingErrorException e) {
 
         }
 
     }
+
+    private Gate addXorGate(Matcher matcher) {
+        try {
+            return createGate(matcher, "xor");
+        } catch (ModelingErrorException e) {
+
+        }
+
+    }
+
+    private Gate addAndGate(Matcher matcher) {
+        try {
+            return createGate(matcher, "and");
+        } catch (ModelingErrorException e) {
+
+        }
+    }
+
+    private Gate addOrGate(Matcher matcher, List<Gate> gates) {
+        try {
+            return createGate(matcher, "or");
+        } catch (ModelingErrorException e) {
+
+        }
+    }
+
 
     private void defineWire(Matcher matcher) {
         String name = matcher.group("name");
         Wire wire = new Wire(name);
         nameWireHashmap.put(name, wire);
-    }
-
-    private void addAndGate(Matcher matcher) {
-        try {
-            gates.add(createGate(matcher, "and"));
-        } catch (NotModelingTimeException e) {
-
-        }
-    }
-
-    private void addOrGate(Matcher matcher) {
-        try {
-            gates.add(createGate(matcher, "or"));
-        } catch (NotModelingTimeException e) {
-
-        }
     }
 
     private short getDelay(Matcher matcher) {
@@ -201,3 +202,4 @@ public class ProgramController {
         is_modeling = true;
     }
 }
+*/

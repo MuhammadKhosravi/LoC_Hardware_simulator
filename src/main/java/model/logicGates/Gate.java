@@ -1,5 +1,7 @@
-package model;
+package model.logicGates;
 
+
+import model.Wire;
 
 public abstract class Gate {
     private final Wire[] inputs;
