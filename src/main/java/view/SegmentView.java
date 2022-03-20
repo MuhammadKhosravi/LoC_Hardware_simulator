@@ -4,14 +4,14 @@ import model.HelpType;
 
 import java.util.Scanner;
 
-public class SegmentView implements View {
-    private static final View segmentView = new SegmentView();
+public class SegmentView {
+    private static final SegmentView segmentView = new SegmentView();
 
     private final View initView = InitView.getInstance();
     private final View modelingView = new ModelingView();
     private final View simulateVie = new SimulateView();
 
-    public static View getInstance() {
+    public static SegmentView getInstance() {
         return segmentView;
     }
 

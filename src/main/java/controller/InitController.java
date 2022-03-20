@@ -26,7 +26,7 @@ public class InitController implements Controller {
         if (intValue > 1) {
             throw new InvalidInputException(line);
         }
-        if(memory.getNameWireMap().containsKey(name)){
+        if (memory.getNameWireMap().containsKey(name)) {
             throw new RepeatedInputException(line);
         }
         Wire wire = new Wire(name, true);
@@ -49,6 +49,5 @@ public class InitController implements Controller {
     @Override
     public void undo() {
         newInputs.forEach(in -> memory.getNameWireMap().remove(in));
-        newInputs = null;
     }
 }

@@ -1,4 +1,4 @@
-package model;
+package model.Instructions;
 
 public enum InitInstruction {
     INIT_FINISH,
