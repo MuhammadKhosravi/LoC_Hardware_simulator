@@ -38,11 +38,10 @@ public class InitView implements View {
 
     public void getInputs(Scanner scanner, List<String> commands) {
         String input;
-        boolean finish = false;
-        while (!finish) {
+        while (true) {
             input = scanner.nextLine().trim();
             if (input.equals(Statics.INIT_FINISH)) {
-                finish = true;
+                break;
             }
             commands.add(input);
         }
@@ -62,22 +61,16 @@ public class InitView implements View {
             }
             if (!isValid) exceptions.add(new BadSyntaxException(i + 1));
         }
+        if (showErrors(exceptions)) controller.undo();
     }
 
 
     private void findCommand(List<Exception> exceptions, int line, Pair<String, InitInstruction> initInstruction, Matcher matcher) {
-        switch (initInstruction.getValue()) {
-            case INIT_VALUE -> {
-                try {
-                    controller.defineInput(matcher.group("name"), matcher.group("value"), line + 1);
-                } catch (LogicalException e) {
-                    exceptions.add(e);
-                }
-            }
-            case INIT_FINISH -> {
-                if (showErrors(exceptions)) {
-                    controller.undo();
-                }
+        if (initInstruction.getValue() == InitInstruction.INIT_VALUE) {
+            try {
+                controller.defineInput(matcher.group("name"), matcher.group("value"), line + 1);
+            } catch (LogicalException e) {
+                exceptions.add(e);
             }
         }
     }

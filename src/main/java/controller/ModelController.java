@@ -8,14 +8,17 @@ import model.Wire;
 import model.logicGates.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class ModelController implements Controller {
     private static final ModelController instance = new ModelController();
-    private List<Gate> buffer;
-    private List<String> newInputs;
-
     private Memory memory;
+
+    private List<Gate> newGates;
+    private HashMap<String, Wire> newInputs;
+    private HashMap<Wire, Gate> wireSrcMap;
+
 
     public static void config(Memory memory) {
         instance.memory = memory;
@@ -25,13 +28,12 @@ public class ModelController implements Controller {
         return instance;
     }
 
-    private void defineWire(String name, int line) {
+    public void defineWire(String name, int line) {
         if (memory.getNameWireMap().containsKey(name)) {
             throw new RepeatedInputException(line);
         }
         Wire wire = new Wire(name, false);
-        memory.getNameWireMap().put(name, wire);
-        newInputs.add(name);
+        newInputs.put(name, wire);
     }
 
     public void createAndGate(String output, String delay, String[] inputs, int line) {
@@ -39,7 +41,7 @@ public class ModelController implements Controller {
         Wire[] wireInputs = getWireInputs(inputs);
         int intDelay = Integer.parseInt(delay);
         Gate gate = new AndGate(wireOutput, intDelay, wireInputs);
-        buffer.add(gate);
+        newGates.add(gate);
     }
 
     public void createOrGate(String output, String delay, String[] inputs, int line) {
@@ -47,7 +49,7 @@ public class ModelController implements Controller {
         Wire[] wireInputs = getWireInputs(inputs);
         int intDelay = Integer.parseInt(delay);
         Gate gate = new OrGate(wireOutput, intDelay, wireInputs);
-        buffer.add(gate);
+        newGates.add(gate);
     }
 
     public void createNandGate(String output, String delay, String[] inputs, int line) {
@@ -55,7 +57,7 @@ public class ModelController implements Controller {
         Wire[] wireInputs = getWireInputs(inputs);
         int intDelay = Integer.parseInt(delay);
         Gate gate = new NandGate(wireOutput, intDelay, wireInputs);
-        buffer.add(gate);
+        newGates.add(gate);
     }
 
     public void createXorGate(String output, String delay, String[] inputs, int line) {
@@ -63,7 +65,7 @@ public class ModelController implements Controller {
         Wire[] wireInputs = getWireInputs(inputs);
         int intDelay = Integer.parseInt(delay);
         Gate gate = new XorGate(wireOutput, intDelay, wireInputs);
-        buffer.add(gate);
+        newGates.add(gate);
     }
 
     public void createNorGate(String output, String delay, String[] inputs, int line) {
@@ -71,7 +73,7 @@ public class ModelController implements Controller {
         Wire[] wireInputs = getWireInputs(inputs);
         int intDelay = Integer.parseInt(delay);
         Gate gate = new NorGate(wireOutput, intDelay, wireInputs);
-        buffer.add(gate);
+        newGates.add(gate);
     }
 
     public void updateValue(String wireName, String time, String value, int line) {
@@ -97,17 +99,22 @@ public class ModelController implements Controller {
 
     @Override
     public void track() {
-        newInputs = new ArrayList<>();
-        buffer = new ArrayList<>();
+        newInputs = new HashMap<>();
+        newGates = new ArrayList<>();
+        wireSrcMap = new HashMap<>();
     }
 
     @Override
     public void unTrack() {
-
+        memory.getNameWireMap().putAll(newInputs);
+        memory.getGates().addAll(newGates);
+        memory.getWireSrcMap().putAll(wireSrcMap);
     }
 
     @Override
     public void undo() {
-
+        newInputs.clear();
+        newGates.clear();
+        wireSrcMap.clear();
     }
 }

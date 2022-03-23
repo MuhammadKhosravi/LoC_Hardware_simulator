@@ -1,17 +1,15 @@
 package controller;
 
 import controller.exception.logicalException.InvalidInputException;
-import controller.exception.logicalException.RepeatedInputException;
 import model.Memory;
 import model.Wire;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 
 public class InitController implements Controller {
     private static final InitController instance = new InitController();
     private Memory memory;
-    private List<String> newInputs;
+    private HashMap<String, Wire> newInputs;
 
     public static void config(Memory memory) {
         instance.memory = memory;
@@ -26,28 +24,25 @@ public class InitController implements Controller {
         if (intValue > 1) {
             throw new InvalidInputException(line);
         }
-        if (memory.getNameWireMap().containsKey(name)) {
-            throw new RepeatedInputException(line);
-        }
         Wire wire = new Wire(name, true);
-        memory.getNameWireMap().put(name, wire);
         wire.setValue(intValue == 1);
-        newInputs.add(name);
+        newInputs.put(name, wire);
     }
 
 
     @Override
     public void track() {
-        newInputs = new ArrayList<>();
+        newInputs = new HashMap<>();
     }
 
     @Override
     public void unTrack() {
+        memory.getNameWireMap().putAll(newInputs);
         newInputs = null;
     }
 
     @Override
     public void undo() {
-        newInputs.forEach(in -> memory.getNameWireMap().remove(in));
+        newInputs.clear();
     }
 }

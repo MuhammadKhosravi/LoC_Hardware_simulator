@@ -1,4 +1,5 @@
 import controller.InitController;
+import controller.ModelController;
 import model.Memory;
 
 public class DIConfig {
@@ -6,5 +7,6 @@ public class DIConfig {
         Memory memory = new Memory();
 
         InitController.config(memory);
+        ModelController.config(memory);
     }
 }

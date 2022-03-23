@@ -66,30 +66,36 @@ public class ModelingView implements View {
 
     private void findCommand(List<Exception> exceptions, int line, Pair<String, ModelingInstruction> modelingInstruction,
                              Matcher matcher) {
-        switch (modelingInstruction.getValue()) {
-            case AND -> controller.createAndGate(matcher.group("output"),
-                    matcher.group("delay"),
-                    matcher.group("inputs").split(","), line);
+        try {
+            switch (modelingInstruction.getValue()) {
+                case DEF_WIRE -> controller.defineWire(matcher.group("name"),
+                        line);
+                case AND -> controller.createAndGate(matcher.group("output"),
+                        matcher.group("delay"),
+                        matcher.group("inputs").split(","), line);
 
-            case OR -> controller.createOrGate(matcher.group("output"),
-                    matcher.group("delay"),
-                    matcher.group("inputs").split(","), line);
+                case OR -> controller.createOrGate(matcher.group("output"),
+                        matcher.group("delay"),
+                        matcher.group("inputs").split(","), line);
 
-            case NOR -> controller.createNorGate(matcher.group("output"),
-                    matcher.group("delay"),
-                    matcher.group("inputs").split(","), line);
+                case NOR -> controller.createNorGate(matcher.group("output"),
+                        matcher.group("delay"),
+                        matcher.group("inputs").split(","), line);
 
-            case NAND -> controller.createNandGate(matcher.group("output"),
-                    matcher.group("delay"),
-                    matcher.group("inputs").split(","), line);
+                case NAND -> controller.createNandGate(matcher.group("output"),
+                        matcher.group("delay"),
+                        matcher.group("inputs").split(","), line);
 
-            case XOR -> controller.createXorGate(matcher.group("output"),
-                    matcher.group("delay"),
-                    matcher.group("inputs").split(","), line);
+                case XOR -> controller.createXorGate(matcher.group("output"),
+                        matcher.group("delay"),
+                        matcher.group("inputs").split(","), line);
 
-            case UPDATE -> controller.updateValue(matcher.group("name"),
-                    matcher.group("time"),
-                    matcher.group("value"), line);
+                case UPDATE -> controller.updateValue(matcher.group("name"),
+                        matcher.group("time"),
+                        matcher.group("value"), line);
+            }
+        }catch (Exception e){
+            exceptions.add(e);
         }
     }
 
