@@ -32,19 +32,19 @@ public class Statics {
 
 
     private static final Pair<String, ModelingInstruction> MODELING_AND =
-            new Pair<>("and\\((?<output>\\w+), (?<delay>\\d+), (?<inputs>.+)\\)$", ModelingInstruction.AND);
+            new Pair<>("and\\s*\\((?<output>\\w+)\\s*,\\s*(?<delay>\\d+)\\s*,\\s*(?<inputs>.+)\\)$", ModelingInstruction.AND);
 
     private static final Pair<String, ModelingInstruction> MODELING_OR =
-            new Pair<>("or\\((?<output>\\w+), (?<delay>\\d+), (?<inputs>.+)\\)$", ModelingInstruction.OR);
+            new Pair<>("or\\s*\\((?<output>\\w+)\\s*,\\s*(?<delay>\\d+)\\s*,\\s*(?<inputs>.+)\\)$", ModelingInstruction.OR);
 
     private static final Pair<String, ModelingInstruction> MODELING_NAND =
-            new Pair<>("^nand\\((?<output>\\w+), (?<delay>\\d+), (?<inputs>.+)\\)$", ModelingInstruction.NAND);
+            new Pair<>("^nand\\s*\\((?<output>\\w+)\\s*,\\s*(?<delay>\\d+)\\s*,\\s*(?<inputs>.+)\\)$", ModelingInstruction.NAND);
 
     private static final Pair<String, ModelingInstruction> MODELING_NOR =
-            new Pair<>("nor\\((?<output>\\w+), (?<delay>\\d+), (?<inputs>.+)\\)$", ModelingInstruction.NOR);
+            new Pair<>("nor\\s*\\((?<output>\\w+)\\s*,\\s*(?<delay>\\d+)\\s*,\\s*(?<inputs>.+)\\)$", ModelingInstruction.NOR);
 
     private static final Pair<String, ModelingInstruction> MODELING_XOR =
-            new Pair<>("xor\\((?<output>\\w+), (?<delay>\\d+), (?<inputs>.+)\\)$", ModelingInstruction.XOR);
+            new Pair<>("xor\\s*\\((?<output>\\w+)\\s*,\\s*(?<delay>\\d+)\\s*,\\s*(?<inputs>.+)\\)$", ModelingInstruction.XOR);
 
     private static final Pair<String, ModelingInstruction> MODELING_UPDATE =
             new Pair<>("^update (?<name>\\w+) = (?<value>\\d) in (?<time>\\d+)$", ModelingInstruction.UPDATE);
@@ -53,7 +53,7 @@ public class Statics {
             new Pair<>("^wire (?<name>\\w+)$", ModelingInstruction.DEF_WIRE);
 
     private static final Pair<String, SimulateInstruction> SIMULATE_SIM =
-            new Pair<>("^sim\\((?<name>\\w+), (?<start>\\d+), (?<finish>\\d+), (?<step>\\d+))$", SimulateInstruction.SIMULATE_INSTRUCTION);
+            new Pair<>("^sim\\((?<name>\\w+)\\s*,\\s*(?<start>\\d+)\\s*,\\s*(?<finish>\\d+)\\s*,\\s*(?<step>\\d+)\\)$", SimulateInstruction.SIMULATE_INSTRUCTION);
 
 
     private static final Scanner SCANNER = new Scanner(System.in);
