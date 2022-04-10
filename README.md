@@ -1,4 +1,4 @@
-# LoC_Hardware_simulator
+# LoC Hardware Simulator
 ![LoC LOGO](LOGO.png)
 ## INIT SEGMENT
 - [x] implement view
