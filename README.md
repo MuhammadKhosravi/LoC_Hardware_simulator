@@ -17,4 +17,5 @@
 - [x] implement basic controller method
 - [x] implement graph algorithms
 - [ ] implement exeptions
-- [ ] test **SIMULATE SEGMENT**
+- [x] test sim for not updated circuits ( no input change during cimulate )
+- [ ] test sim for updated circuits
