@@ -3,19 +3,19 @@
 ## INIT SEGMENT
 - [x] implement view
 - [x] implement basic controller method
-- [x] implement exeptions
+- [x] implement exceptions
 - [x] test **INIT SEGMENT**
 
 ## MODELING SEGMENT
 - [x] implement view
 - [x] implement basic controller method
-- [ ] implement exeptions
+- [ ] implement exceptions
 - [x] test **MODELING SEGMENT**
 
 ## SIMULATE SEGMENT
 - [x] implement view
 - [x] implement basic controller method
 - [x] implement graph algorithms
-- [ ] implement exeptions
-- [x] test sim for not updated circuits ( no input change during cimulate )
-- [ ] test sim for updated circuits
+- [ ] implement exceptions
+- [x] test sim for not updated circuits ( no input change during simulate )
+- [x] test sim for updated circuits
