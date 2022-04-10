@@ -17,4 +17,4 @@
 - [x] implement basic controller method
 - [x] implement graph algorithms
 - [ ] implement exeptions
-- [ ] test **MODELING SEGMENT**
+- [ ] test **SIMULATE SEGMENT**
