@@ -6,12 +6,14 @@ import model.Pair;
 import model.Wire;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class SimulatorController implements Controller {
     private static final SimulatorController instance = new SimulatorController();
     private CircuitGrath grath;
     private Memory memory;
-
+    private Map<Wire, Boolean> zeroTimeWiresVal;
 
     public static SimulatorController getInstance() {
         return instance;
@@ -21,17 +23,22 @@ public class SimulatorController implements Controller {
         instance.memory = memory;
     }
 
-    public ArrayList<Boolean> sim(String wireSt, String startTimeSt, String endTimeSt, String stepSt) {
+    public ArrayList<Integer> sim(String wireSt, String startTimeSt, String endTimeSt, String stepSt) {
         int startTime = Integer.parseInt(startTimeSt);
         int endTime = Integer.parseInt(endTimeSt);
         int step = Integer.parseInt(stepSt);
         Wire wire = memory.getNameWireMap().get(wireSt);
 
         ArrayList<Pair<Integer, Boolean>> timeline = wire.getSource().getGateTimeLine();
-        ArrayList<Boolean> dataTable = new ArrayList<>();
+        ArrayList<Integer> dataTable = new ArrayList<>();
         for (int i = startTime; i < endTime; i += step) {
             int index = binarySearch(timeline, i);
-            dataTable.add(timeline.get(index).getValue());
+            if (index < 0) dataTable.add(-1);
+            else {
+                int parsedVal = timeline.get(index).getValue() ? 1 : 0;
+                dataTable.add(parsedVal);
+            }
+
         }
         return dataTable;
     }
@@ -57,17 +64,22 @@ public class SimulatorController implements Controller {
 
     @Override
     public void track() {
+        zeroTimeWiresVal = new HashMap<>();
+        memory.getNameWireMap().forEach((k, v) -> {
+            zeroTimeWiresVal.put(v, v.isValue());
+        });
+
         grath = new CircuitGrath();
         grath.initGraph(memory.getGates(), memory.getChangeStatusMap());
     }
 
     @Override
     public void unTrack() {
-
+        grath.clear();
     }
 
     @Override
     public void undo() {
-
+        zeroTimeWiresVal.forEach(Wire::setValue);
     }
 }

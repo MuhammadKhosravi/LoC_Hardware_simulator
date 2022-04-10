@@ -86,4 +86,9 @@ public class CircuitGrath {
             nodeGateHashMap.put(n, g);
         });
     }
+
+    public void clear() {
+        headNodes.clear();
+        allNodes.clear();
+    }
 }

@@ -56,7 +56,7 @@ public class SimulateView implements View {
                 if (matcher.find()) {
                     try {
                         if (simulateInstruction.getValue() == SimulateInstruction.SIMULATE_INSTRUCTION) {
-                            ArrayList<Boolean> answer = controller.sim(matcher.group("wire"),
+                            ArrayList<Integer> answer = controller.sim(matcher.group("wire"),
                                     matcher.group("start"),
                                     matcher.group("finish"),
                                     matcher.group("step"));

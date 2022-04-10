@@ -55,6 +55,7 @@ public class CircuitNode {
         if (nodeGate.doesHaveDirectInput(trigger)) base = time;
         setNodeDelay(base);
         this.nodeGate.calculateOutput();
+        this.output = this.nodeGate.getOutput().isValue();
         this.isVisited = true;
     }
 

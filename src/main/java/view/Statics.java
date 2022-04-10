@@ -11,7 +11,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Statics {
-    public static final boolean IS_GUID_NEEDED = true;
+    public static final boolean IS_GUID_NEEDED = false;
 
 
     public static final String MODEL_START = "start modeling";
