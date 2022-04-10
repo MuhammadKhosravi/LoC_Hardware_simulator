@@ -4,6 +4,7 @@ import model.CircuitGrath;
 import model.Memory;
 import model.Pair;
 import model.Wire;
+import model.logicGates.Gate;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,20 +24,20 @@ public class SimulatorController implements Controller {
         instance.memory = memory;
     }
 
-    public ArrayList<Integer> sim(String wireSt, String startTimeSt, String endTimeSt, String stepSt) {
+    public ArrayList<Pair<Integer , Integer>> sim(String wireSt, String startTimeSt, String endTimeSt, String stepSt) {
         int startTime = Integer.parseInt(startTimeSt);
         int endTime = Integer.parseInt(endTimeSt);
         int step = Integer.parseInt(stepSt);
         Wire wire = memory.getNameWireMap().get(wireSt);
 
         ArrayList<Pair<Integer, Boolean>> timeline = wire.getSource().getGateTimeLine();
-        ArrayList<Integer> dataTable = new ArrayList<>();
+        ArrayList<Pair<Integer , Integer>> dataTable = new ArrayList<>();
         for (int i = startTime; i < endTime; i += step) {
             int index = binarySearch(timeline, i);
-            if (index < 0) dataTable.add(-1);
+            if (index < 0) dataTable.add(new Pair<>(i , -1));
             else {
                 int parsedVal = timeline.get(index).getValue() ? 1 : 0;
-                dataTable.add(parsedVal);
+                dataTable.add(new Pair<>(i , parsedVal));
             }
 
         }
@@ -65,9 +66,7 @@ public class SimulatorController implements Controller {
     @Override
     public void track() {
         zeroTimeWiresVal = new HashMap<>();
-        memory.getNameWireMap().forEach((k, v) -> {
-            zeroTimeWiresVal.put(v, v.isValue());
-        });
+        memory.getNameWireMap().forEach((k, v) -> zeroTimeWiresVal.put(v, v.isValue()));
 
         grath = new CircuitGrath();
         grath.initGraph(memory.getGates(), memory.getChangeStatusMap());
@@ -75,11 +74,13 @@ public class SimulatorController implements Controller {
 
     @Override
     public void unTrack() {
+        zeroTimeWiresVal.forEach(Wire::setValue);
+        memory.getGates().forEach(Gate::clear);
         grath.clear();
     }
 
     @Override
     public void undo() {
-        zeroTimeWiresVal.forEach(Wire::setValue);
+        // NO ACTION IS NEEDED
     }
 }

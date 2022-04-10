@@ -47,7 +47,8 @@ public class SimulateView implements View {
 
     @Override
     public void execute(List<String> commands) {
-        List<RuntimeException> exceptions = new ArrayList<>();
+        List<Exception> exceptions = new ArrayList<>();
+        ArrayList<List<Pair<Integer, Integer>>> outputs = new ArrayList<>();
         for (int i = 0; i < commands.size(); i++) {
             boolean isValid = false;
 
@@ -56,18 +57,31 @@ public class SimulateView implements View {
                 if (matcher.find()) {
                     try {
                         if (simulateInstruction.getValue() == SimulateInstruction.SIMULATE_INSTRUCTION) {
-                            ArrayList<Integer> answer = controller.sim(matcher.group("wire"),
+                            ArrayList<Pair<Integer, Integer>> output = controller.sim(matcher.group("wire"),
                                     matcher.group("start"),
                                     matcher.group("finish"),
                                     matcher.group("step"));
-                            System.out.println(answer);
+                            outputs.add(output);
                         }
-                    } catch (RuntimeException e) {
+                    } catch (Exception e) {
                         exceptions.add(e);
                     }
                 }
             }
             if (!isValid) exceptions.add(new BadSyntaxException(i + 1));
+        }
+
+        if (!showErrors(exceptions)) {
+            displayOutputs(outputs);
+        }
+    }
+
+    private void displayOutputs(List<List<Pair<Integer, Integer>>> outputs) {
+        for (List<Pair<Integer, Integer>> output : outputs) {
+            for (Pair<Integer, Integer> integerIntegerPair : output) {
+                System.out.println("TIME : " + integerIntegerPair.getKey() + " VALUE : " + integerIntegerPair.getValue());
+            }
+            System.out.println("------------------------------------");
         }
     }
 }

@@ -51,4 +51,7 @@ public abstract class Gate {
         return false;
     }
 
+    public void clear() {
+        gateTimeLine.clear();
+    }
 }
