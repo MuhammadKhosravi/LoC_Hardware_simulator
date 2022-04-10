@@ -1,11 +1,15 @@
 package view;
 
 import controller.SimulatorController;
+import controller.exception.BadSyntaxException;
 import model.HelpType;
+import model.Instructions.SimulateInstruction;
+import model.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.regex.Matcher;
 
 public class SimulateView implements View {
 
@@ -14,12 +18,11 @@ public class SimulateView implements View {
     @Override
     public void run() {
         Statics.help(HelpType.SIM_VIEW);
+        controller.track();
+
         List<String> commands = new ArrayList<>();
         Scanner scanner = Statics.getScanner();
         getInputs(scanner, commands);
-
-        controller.track();
-
         execute(commands);
 
         controller.unTrack();
@@ -44,6 +47,27 @@ public class SimulateView implements View {
 
     @Override
     public void execute(List<String> commands) {
+        List<RuntimeException> exceptions = new ArrayList<>();
+        for (int i = 0; i < commands.size(); i++) {
+            boolean isValid = false;
 
+            for (Pair<String, SimulateInstruction> simulateInstruction : Statics.SIMULATE_INSTRUCTIONS) {
+                Matcher matcher = Statics.getMatcher(commands.get(i), simulateInstruction.getKey());
+                if (matcher.find()) {
+                    try {
+                        if (simulateInstruction.getValue() == SimulateInstruction.SIMULATE_INSTRUCTION) {
+                            ArrayList<Boolean> answer = controller.sim(matcher.group("wire"),
+                                    matcher.group("start"),
+                                    matcher.group("finish"),
+                                    matcher.group("step"));
+                            System.out.println(answer);
+                        }
+                    } catch (RuntimeException e) {
+                        exceptions.add(e);
+                    }
+                }
+            }
+            if (!isValid) exceptions.add(new BadSyntaxException(i + 1));
+        }
     }
 }

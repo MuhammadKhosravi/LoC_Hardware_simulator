@@ -8,7 +8,6 @@ public class Memory {
     private final Map<String, Wire> nameWireMap = new HashMap<>();
     private final Map<Integer, Pair<Wire, Boolean>> changeStatusMap = new TreeMap<>();
     private final List<Gate> gates = new ArrayList<>();
-    private final Map<Wire, Gate> wireSrcMap = new HashMap<>();
 
     public Map<String, Wire> getNameWireMap() {
         return nameWireMap;
@@ -20,9 +19,5 @@ public class Memory {
 
     public List<Gate> getGates() {
         return gates;
-    }
-
-    public Map<Wire, Gate> getWireSrcMap() {
-        return wireSrcMap;
     }
 }

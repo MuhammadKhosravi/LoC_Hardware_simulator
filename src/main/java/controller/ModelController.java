@@ -17,7 +17,6 @@ public class ModelController implements Controller {
 
     private List<Gate> newGates;
     private HashMap<String, Wire> newInputs;
-    private HashMap<Wire, Gate> wireSrcMap;
 
 
     public static void config(Memory memory) {
@@ -38,42 +37,66 @@ public class ModelController implements Controller {
 
     public void createAndGate(String output, String delay, String[] inputs, int line) {
         Wire wireOutput = memory.getNameWireMap().get(output);
+        if (wireOutput == null)
+            wireOutput = newInputs.get(output);
+
         Wire[] wireInputs = getWireInputs(inputs);
         int intDelay = Integer.parseInt(delay);
         Gate gate = new AndGate(wireOutput, intDelay, wireInputs);
         newGates.add(gate);
+        wireOutput.setSource(gate);
     }
 
     public void createOrGate(String output, String delay, String[] inputs, int line) {
         Wire wireOutput = memory.getNameWireMap().get(output);
+        if (wireOutput == null)
+            wireOutput = newInputs.get(output);
+
         Wire[] wireInputs = getWireInputs(inputs);
         int intDelay = Integer.parseInt(delay);
         Gate gate = new OrGate(wireOutput, intDelay, wireInputs);
+
         newGates.add(gate);
+        wireOutput.setSource(gate);
     }
 
     public void createNandGate(String output, String delay, String[] inputs, int line) {
         Wire wireOutput = memory.getNameWireMap().get(output);
+        if (wireOutput == null)
+            wireOutput = newInputs.get(output);
+
         Wire[] wireInputs = getWireInputs(inputs);
         int intDelay = Integer.parseInt(delay);
         Gate gate = new NandGate(wireOutput, intDelay, wireInputs);
+
         newGates.add(gate);
+        wireOutput.setSource(gate);
     }
 
     public void createXorGate(String output, String delay, String[] inputs, int line) {
         Wire wireOutput = memory.getNameWireMap().get(output);
+        if (wireOutput == null)
+            wireOutput = newInputs.get(output);
+
         Wire[] wireInputs = getWireInputs(inputs);
         int intDelay = Integer.parseInt(delay);
         Gate gate = new XorGate(wireOutput, intDelay, wireInputs);
+
         newGates.add(gate);
+        wireOutput.setSource(gate);
     }
 
     public void createNorGate(String output, String delay, String[] inputs, int line) {
         Wire wireOutput = memory.getNameWireMap().get(output);
+        if (wireOutput == null)
+            wireOutput = newInputs.get(output);
+
         Wire[] wireInputs = getWireInputs(inputs);
         int intDelay = Integer.parseInt(delay);
         Gate gate = new NorGate(wireOutput, intDelay, wireInputs);
+
         newGates.add(gate);
+        wireOutput.setSource(gate);
     }
 
     public void updateValue(String wireName, String time, String value, int line) {
@@ -85,14 +108,16 @@ public class ModelController implements Controller {
             throw new InvalidInputException(line);
         }
         boolean boolVal = value.equals("1");
-        memory.getChangeStatusMap().put(intTime, new Pair<Wire, Boolean>(wire, boolVal));
-        //TODO add undo service
+        memory.getChangeStatusMap().put(intTime, new Pair<>(wire, boolVal));
     }
 
     private Wire[] getWireInputs(String[] inputs) {
         Wire[] wireInputs = new Wire[inputs.length];
         for (int i = 0; i < inputs.length; i++) {
             wireInputs[i] = memory.getNameWireMap().get(inputs[i]);
+            if (wireInputs[i] == null) {
+                wireInputs[i] = newInputs.get(inputs[i]);
+            }
         }
         return wireInputs;
     }
@@ -101,20 +126,17 @@ public class ModelController implements Controller {
     public void track() {
         newInputs = new HashMap<>();
         newGates = new ArrayList<>();
-        wireSrcMap = new HashMap<>();
     }
 
     @Override
     public void unTrack() {
         memory.getNameWireMap().putAll(newInputs);
         memory.getGates().addAll(newGates);
-        memory.getWireSrcMap().putAll(wireSrcMap);
     }
 
     @Override
     public void undo() {
         newInputs.clear();
         newGates.clear();
-        wireSrcMap.clear();
     }
 }

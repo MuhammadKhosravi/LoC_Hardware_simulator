@@ -32,28 +32,28 @@ public class Statics {
 
 
     private static final Pair<String, ModelingInstruction> MODELING_AND =
-            new Pair<>("and\\s*\\((?<output>\\w+)\\s*,\\s*(?<delay>\\d+)\\s*,\\s*(?<inputs>.+)\\)$", ModelingInstruction.AND);
+            new Pair<>("^and\\s*\\(\\s*(?<output>\\w+)\\s*,\\s*(?<delay>\\d+)\\s*,\\s*(?<inputs>.+)\\)$", ModelingInstruction.AND);
 
     private static final Pair<String, ModelingInstruction> MODELING_OR =
-            new Pair<>("or\\s*\\((?<output>\\w+)\\s*,\\s*(?<delay>\\d+)\\s*,\\s*(?<inputs>.+)\\)$", ModelingInstruction.OR);
+            new Pair<>("^or\\s*\\((?<output>\\w+)\\s*,\\s*(?<delay>\\d+)\\s*,\\s*(?<inputs>.+)\\)$", ModelingInstruction.OR);
 
     private static final Pair<String, ModelingInstruction> MODELING_NAND =
             new Pair<>("^nand\\s*\\((?<output>\\w+)\\s*,\\s*(?<delay>\\d+)\\s*,\\s*(?<inputs>.+)\\)$", ModelingInstruction.NAND);
 
     private static final Pair<String, ModelingInstruction> MODELING_NOR =
-            new Pair<>("nor\\s*\\((?<output>\\w+)\\s*,\\s*(?<delay>\\d+)\\s*,\\s*(?<inputs>.+)\\)$", ModelingInstruction.NOR);
+            new Pair<>("^nor\\s*\\((?<output>\\w+)\\s*,\\s*(?<delay>\\d+)\\s*,\\s*(?<inputs>.+)\\)$", ModelingInstruction.NOR);
 
     private static final Pair<String, ModelingInstruction> MODELING_XOR =
-            new Pair<>("xor\\s*\\((?<output>\\w+)\\s*,\\s*(?<delay>\\d+)\\s*,\\s*(?<inputs>.+)\\)$", ModelingInstruction.XOR);
+            new Pair<>("^xor\\s*\\((?<output>\\w+)\\s*,\\s*(?<delay>\\d+)\\s*,\\s*(?<inputs>.+)\\)$", ModelingInstruction.XOR);
 
     private static final Pair<String, ModelingInstruction> MODELING_UPDATE =
-            new Pair<>("^update (?<name>\\w+) = (?<value>\\d) in (?<time>\\d+)$", ModelingInstruction.UPDATE);
+            new Pair<>("^update\\s+(?<name>\\w+)\\s*=\\s*(?<value>\\d)\\s+in\\s+(?<time>\\d+)$", ModelingInstruction.UPDATE);
 
     private static final Pair<String, ModelingInstruction> MODELING_DEFINE_WIRE =
             new Pair<>("^wire (?<name>\\w+)$", ModelingInstruction.DEF_WIRE);
 
     private static final Pair<String, SimulateInstruction> SIMULATE_SIM =
-            new Pair<>("^sim\\((?<name>\\w+)\\s*,\\s*(?<start>\\d+)\\s*,\\s*(?<finish>\\d+)\\s*,\\s*(?<step>\\d+)\\)$", SimulateInstruction.SIMULATE_INSTRUCTION);
+            new Pair<>("^sim\\((?<wire>\\w+)\\s*,\\s*(?<start>\\d+)\\s*,\\s*(?<finish>\\d+)\\s*,\\s*(?<step>\\d+)\\)$", SimulateInstruction.SIMULATE_INSTRUCTION);
 
 
     private static final Scanner SCANNER = new Scanner(System.in);
@@ -95,10 +95,12 @@ public class Statics {
                     Available instruction :
                     1) [gate_name]([output_wire], [delay_time], [inputs])
                     2) wire [wire_name]
+                    3) finish modeling
                     """);
             case SIM_VIEW -> System.out.print("""
                     Available instructions :
                     1) sim ([wire_name], [start_time], [end_time], [step])
+                    2) finish simulate
                     """);
 
         }

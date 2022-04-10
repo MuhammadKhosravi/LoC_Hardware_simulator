@@ -24,13 +24,11 @@ public class ModelingView implements View {
     @Override
     public void run() {
         Statics.help(HelpType.MODEL_VIEW);
+        controller.track();
 
         List<String> commands = new ArrayList<>();
         Scanner scanner = Statics.getScanner();
         getInputs(scanner, commands);
-
-        controller.track();
-
         execute(commands);
 
         controller.unTrack();
@@ -72,29 +70,30 @@ public class ModelingView implements View {
                         line);
                 case AND -> controller.createAndGate(matcher.group("output"),
                         matcher.group("delay"),
-                        matcher.group("inputs").split(","), line);
+                        matcher.group("inputs").split("\\s*,\\s*"), line);
+
 
                 case OR -> controller.createOrGate(matcher.group("output"),
                         matcher.group("delay"),
-                        matcher.group("inputs").split(","), line);
+                        matcher.group("inputs").split("\\s*,\\s*"), line);
 
                 case NOR -> controller.createNorGate(matcher.group("output"),
                         matcher.group("delay"),
-                        matcher.group("inputs").split(","), line);
+                        matcher.group("inputs").split("\\s*,\\s*"), line);
 
                 case NAND -> controller.createNandGate(matcher.group("output"),
                         matcher.group("delay"),
-                        matcher.group("inputs").split(","), line);
+                        matcher.group("inputs").split("\\s*,\\s*"), line);
 
                 case XOR -> controller.createXorGate(matcher.group("output"),
                         matcher.group("delay"),
-                        matcher.group("inputs").split(","), line);
+                        matcher.group("inputs").split("\\s*,\\s*"), line);
 
                 case UPDATE -> controller.updateValue(matcher.group("name"),
                         matcher.group("time"),
                         matcher.group("value"), line);
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             exceptions.add(e);
         }
     }

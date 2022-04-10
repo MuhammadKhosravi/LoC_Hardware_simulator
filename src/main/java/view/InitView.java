@@ -23,13 +23,11 @@ public class InitView implements View {
 
     public void run() {
         Statics.help(HelpType.INIT_VIEW);
+        controller.track();
 
         Scanner scanner = Statics.getScanner();
         List<String> commands = new ArrayList<>();
         getInputs(scanner, commands);
-
-        controller.track();
-
         execute(commands);
 
         controller.unTrack();

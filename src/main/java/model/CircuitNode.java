@@ -2,61 +2,67 @@ package model;
 
 import model.logicGates.Gate;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class CircuitNode {
-    private final Gate nodeGate;
-    private final List<CircuitNode> inputNodes;
-    private final Map<Integer, Boolean> outputTimeMap;
+    public final Gate nodeGate;
+    protected int outputTime;
+    protected boolean output;
+    private List<CircuitNode> inputNodes;
     private boolean isVisited;
-    private int totalDelay;
 
-    protected CircuitNode(Gate nodeGate) {
+    public CircuitNode(Gate nodeGate) {
         this.nodeGate = nodeGate;
-        outputTimeMap = new HashMap<>();
-        inputNodes = new ArrayList<>();
-        totalDelay = -1;
+        outputTime = -1;
         isVisited = false;
-    }
-
-
-    public void setVisited(boolean visited) {
-        isVisited = visited;
     }
 
     protected boolean isVisited() {
         return isVisited;
     }
 
-    protected int getTotalDelay() {
-        return totalDelay;
+    public void setVisited(boolean visited) {
+        isVisited = visited;
     }
 
-    protected Map<Integer, Boolean> getOutputTimeMap() {
-        return outputTimeMap;
+    protected int getOutputTime() {
+        return outputTime;
     }
 
-    protected void initTotalDelay() {
-        inputNodes.forEach(in -> {
-                    int nodeDelay;
-                    if (in.getTotalDelay() != -1) {
-                        in.initTotalDelay();
-                    }
-                }
-        );
-        int max = 0;
+    public List<CircuitNode> getInputNodes() {
+        return inputNodes;
+    }
+
+    public void setInputNodes(List<CircuitNode> inputNodes) {
+        this.inputNodes = inputNodes;
+    }
+
+
+    private void setNodeDelay(int base) {
+        int max = base;
         for (CircuitNode inputNode : inputNodes) {
-            if (inputNode.totalDelay > max) {
-                max = inputNode.totalDelay;
+            if (inputNode.outputTime > max) {
+                max = inputNode.outputTime;
             }
         }
-        this.totalDelay = max + this.nodeGate.getDelay();
+        this.outputTime = max + this.nodeGate.getDelay();
     }
 
-    protected void simulateNode() {
 
+    protected void updateNodeProp(String trigger, int time) {
+        updateNodeChildren(trigger, time);
+        int base = 0;
+        if (nodeGate.doesHaveDirectInput(trigger)) base = time;
+        setNodeDelay(base);
+        this.nodeGate.calculateOutput();
+        this.isVisited = true;
+    }
+
+    private void updateNodeChildren(String trigger, int time) {
+        for (CircuitNode inputNode : inputNodes) {
+            if (!inputNode.isVisited) {
+                inputNode.updateNodeProp(trigger, time);
+            }
+        }
     }
 }
