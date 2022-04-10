@@ -1,5 +1,5 @@
 # LoC_Hardware_simulator
-
+![LoC LOGO](LOGO.png)
 ## INIT SEGMENT
 - [x] implement view
 - [x] implement basic controller method
