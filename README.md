@@ -17,5 +17,5 @@
 - [x] implement basic controller method
 - [x] implement graph algorithms
 - [ ] implement exceptions
-- [x] test sim for not updated circuits ( no input change during simulate )
+- [x] test sim for not updated circuits ( no inputs change during simulation )
 - [x] test sim for updated circuits
