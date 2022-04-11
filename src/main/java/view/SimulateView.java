@@ -1,5 +1,6 @@
 package view;
 
+import com.github.sh0nk.matplotlib4j.Plot;
 import controller.SimulatorController;
 import controller.exception.BadSyntaxException;
 import model.HelpType;
@@ -56,12 +57,18 @@ public class SimulateView implements View {
                 Matcher matcher = Statics.getMatcher(commands.get(i), simulateInstruction.getKey());
                 if (matcher.find()) {
                     try {
-                        if (simulateInstruction.getValue() == SimulateInstruction.SIMULATE_INSTRUCTION) {
-                            ArrayList<Pair<Integer, Integer>> output = controller.sim(matcher.group("wire"),
-                                    matcher.group("start"),
-                                    matcher.group("finish"),
-                                    matcher.group("step"));
-                            outputs.add(output);
+                        switch (simulateInstruction.getValue()) {
+                            case SIMULATE_INSTRUCTION -> {
+                                ArrayList<Pair<Integer, Integer>> output = controller.sim(matcher.group("wire"),
+                                        matcher.group("start"),
+                                        matcher.group("finish"),
+                                        matcher.group("step"));
+                                outputs.add(output);
+                            }
+                            case SIMULATE_PLOT -> {
+                                Plot plot = controller.drawPlot(matcher.group("wire"));
+                                plot.show();
+                            }
                         }
                     } catch (Exception e) {
                         exceptions.add(e);

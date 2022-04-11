@@ -54,6 +54,8 @@ public class Statics {
 
     private static final Pair<String, SimulateInstruction> SIMULATE_SIM =
             new Pair<>("^sim\\s*\\((?<wire>\\w+)\\s*,\\s*(?<start>\\d+)\\s*,\\s*(?<finish>\\d+)\\s*,\\s*(?<step>\\d+)\\)$", SimulateInstruction.SIMULATE_INSTRUCTION);
+    private static final Pair<String, SimulateInstruction> SIMULATE_PLOT =
+            new Pair<>("^plot\\s+(?<wire>\\w+)", SimulateInstruction.SIMULATE_PLOT);
 
 
     private static final Scanner SCANNER = new Scanner(System.in);
@@ -72,8 +74,9 @@ public class Statics {
             MODELING_UPDATE
     )));
 
-    public static List<Pair<String, SimulateInstruction>> SIMULATE_INSTRUCTIONS = new ArrayList<>(Collections.singletonList(
-            SIMULATE_SIM
+    public static List<Pair<String, SimulateInstruction>> SIMULATE_INSTRUCTIONS = new ArrayList<>(Arrays.asList(
+            SIMULATE_SIM,
+            SIMULATE_PLOT
     ));
 
     public static void help(HelpType type) {

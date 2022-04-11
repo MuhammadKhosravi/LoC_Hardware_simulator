@@ -5,6 +5,7 @@ import model.Pair;
 import model.Wire;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public abstract class Gate {
     private final Wire[] inputs;
@@ -12,7 +13,7 @@ public abstract class Gate {
 
     // time is measured in milliseconds
     private final int delay;
-    private ArrayList<Pair<Integer, Boolean>> gateTimeLine;
+    private final List<Pair<Integer, Boolean>> gateTimeLine;
 
 
     public Gate(Wire output, int delay, Wire... inputs) {
@@ -39,7 +40,7 @@ public abstract class Gate {
         return inputs;
     }
 
-    public ArrayList<Pair<Integer, Boolean>> getGateTimeLine() {
+    public List<Pair<Integer, Boolean>> getGateTimeLine() {
         return gateTimeLine;
     }
 

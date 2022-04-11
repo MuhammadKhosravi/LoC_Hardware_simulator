@@ -1,5 +1,6 @@
 package controller;
 
+import com.github.sh0nk.matplotlib4j.Plot;
 import model.CircuitGrath;
 import model.Memory;
 import model.Pair;
@@ -8,6 +9,7 @@ import model.logicGates.Gate;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class SimulatorController implements Controller {
@@ -24,27 +26,54 @@ public class SimulatorController implements Controller {
         instance.memory = memory;
     }
 
-    public ArrayList<Pair<Integer , Integer>> sim(String wireSt, String startTimeSt, String endTimeSt, String stepSt) {
+    public ArrayList<Pair<Integer, Integer>> sim(String wireSt, String startTimeSt, String endTimeSt, String stepSt) {
         int startTime = Integer.parseInt(startTimeSt);
         int endTime = Integer.parseInt(endTimeSt);
         int step = Integer.parseInt(stepSt);
         Wire wire = memory.getNameWireMap().get(wireSt);
 
-        ArrayList<Pair<Integer, Boolean>> timeline = wire.getSource().getGateTimeLine();
-        ArrayList<Pair<Integer , Integer>> dataTable = new ArrayList<>();
+        List<Pair<Integer, Boolean>> timeline = wire.getSource().getGateTimeLine();
+        ArrayList<Pair<Integer, Integer>> dataTable = new ArrayList<>();
         for (int i = startTime; i < endTime; i += step) {
             int index = binarySearch(timeline, i);
-            if (index < 0) dataTable.add(new Pair<>(i , -1));
+            if (index < 0) dataTable.add(new Pair<>(i, -1));
             else {
                 int parsedVal = timeline.get(index).getValue() ? 1 : 0;
-                dataTable.add(new Pair<>(i , parsedVal));
+                dataTable.add(new Pair<>(i, parsedVal));
             }
 
         }
         return dataTable;
     }
 
-    private int binarySearch(ArrayList<Pair<Integer, Boolean>> arr, int x) {
+    public Plot drawPlot(String wireName) {
+        Wire wire = memory.getNameWireMap().get(wireName);
+        Gate gate = wire.getSource();
+        List<Pair<Integer, Boolean>> timeLine = gate.getGateTimeLine();
+        List<Double> xAxis = new ArrayList<>();
+        List<Double> yAxis = new ArrayList<>();
+        xAxis.add(Double.valueOf(timeLine.get(0).getKey()));
+        yAxis.add((double) (timeLine.get(0).getValue() ? 1 : 0));
+        timeLine.stream().skip(1).forEach(p -> {
+            xAxis.add(Double.valueOf(p.getKey()));
+            xAxis.add(Double.valueOf(p.getKey()));
+            double value = p.getValue() ? 1 : 0;
+            yAxis.add(yAxis.get(yAxis.size() - 1));
+            yAxis.add(value);
+        });
+        xAxis.add(xAxis.get(xAxis.size() - 1) + 1);
+        yAxis.add(yAxis.get(yAxis.size() - 1));
+        Plot plot = Plot.create();
+        plot.title("Wire " + wireName);
+        plot.legend().loc("upper right");
+        plot.plot().add(xAxis, yAxis);
+        plot.ylim(-0.4, 1.4);
+        plot.plot().color("blue").linewidth(2.5).linestyle("-");
+        return plot;
+    }
+
+
+    private int binarySearch(List<Pair<Integer, Boolean>> arr, int x) {
         int left = 0, right = arr.size() - 1;
 
         while (left <= right) {
