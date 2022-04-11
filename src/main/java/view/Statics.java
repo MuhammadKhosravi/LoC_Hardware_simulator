@@ -53,7 +53,7 @@ public class Statics {
             new Pair<>("^wire (?<name>\\w+)$", ModelingInstruction.DEF_WIRE);
 
     private static final Pair<String, SimulateInstruction> SIMULATE_SIM =
-            new Pair<>("^sim\\((?<wire>\\w+)\\s*,\\s*(?<start>\\d+)\\s*,\\s*(?<finish>\\d+)\\s*,\\s*(?<step>\\d+)\\)$", SimulateInstruction.SIMULATE_INSTRUCTION);
+            new Pair<>("^sim\\s*\\((?<wire>\\w+)\\s*,\\s*(?<start>\\d+)\\s*,\\s*(?<finish>\\d+)\\s*,\\s*(?<step>\\d+)\\)$", SimulateInstruction.SIMULATE_INSTRUCTION);
 
 
     private static final Scanner SCANNER = new Scanner(System.in);
