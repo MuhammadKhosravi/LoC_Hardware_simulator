@@ -5,9 +5,11 @@ import model.Memory;
 import model.Pair;
 import model.Wire;
 import model.logicGates.Gate;
-import org.knowm.xchart.QuickChart;
 import org.knowm.xchart.XYChart;
+import org.knowm.xchart.XYChartBuilder;
+import org.knowm.xchart.style.Styler;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -58,7 +60,10 @@ public class SimulatorController implements Controller {
         initScales(timeLine, xAxis, yAxis);
 
 
-        XYChart chart = QuickChart.getChart(wireName + " plot", "Time", "Value", "Oscillation", xAxis, yAxis);
+        XYChart chart = new XYChartBuilder().theme(Styler.ChartTheme.GGPlot2).build();
+        chart.addSeries("Oscillation", xAxis, yAxis);
+        chart.getStyler().setSeriesColors(new Color[]{Color.RED});
+        chart.getStyler().setPlotBackgroundColor(Color.WHITE);
         chart.getStyler().setYAxisTicksVisible(false);
         return chart;
     }

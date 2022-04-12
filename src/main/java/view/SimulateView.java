@@ -5,9 +5,11 @@ import controller.exception.BadSyntaxException;
 import model.HelpType;
 import model.Instructions.SimulateInstruction;
 import model.Pair;
-import org.knowm.xchart.SwingWrapper;
+import org.knowm.xchart.XChartPanel;
 import org.knowm.xchart.XYChart;
 
+import javax.swing.*;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -68,7 +70,18 @@ public class SimulateView implements View {
                             }
                             case SIMULATE_PLOT -> {
                                 XYChart chart = controller.drawPlot(matcher.group("wire"));
-                                new SwingWrapper(chart).displayChart();
+                                javax.swing.SwingUtilities.invokeLater(() -> {
+
+                                    JFrame frame = new JFrame("Wire");
+                                    frame.setLayout(new BorderLayout());
+                                    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+                                    JPanel chartPanel = new XChartPanel<>(chart);
+                                    frame.add(chartPanel, BorderLayout.CENTER);
+                                    chartPanel.setBackground(Color.BLACK);
+                                    frame.pack();
+                                    frame.setVisible(true);
+                                });
                             }
                         }
                     } catch (Exception e) {
@@ -92,4 +105,6 @@ public class SimulateView implements View {
             System.out.println("------------------------------------");
         }
     }
+
+
 }
