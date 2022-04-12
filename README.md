@@ -9,13 +9,13 @@
 ## MODELING SEGMENT
 - [x] implement view
 - [x] implement basic controller method
-- [ ] implement exceptions
+- [x] implement exceptions
 - [x] test **MODELING SEGMENT**
 
 ## SIMULATE SEGMENT
 - [x] implement view
 - [x] implement basic controller method
 - [x] implement graph algorithms
-- [ ] implement exceptions
+- [x] implement exceptions
 - [x] test sim for not updated circuits ( no inputs change during simulation )
 - [x] test sim for updated circuits

@@ -1,5 +1,7 @@
 package controller;
 
+import controller.exception.simulatorException.InvalidTimeException;
+import controller.exception.simulatorException.WireNotDeclaredException;
 import model.CircuitGrath;
 import model.Memory;
 import model.Pair;
@@ -33,7 +35,15 @@ public class SimulatorController implements Controller {
         int startTime = Integer.parseInt(startTimeSt);
         int endTime = Integer.parseInt(endTimeSt);
         int step = Integer.parseInt(stepSt);
+
+        if (startTime > endTime) {
+            throw new InvalidTimeException();
+        }
         Wire wire = memory.getNameWireMap().get(wireSt);
+        if (wire == null) {
+            throw new WireNotDeclaredException(wireSt);
+        }
+
 
         Map<Integer, Boolean> timeline = wire.getSource().getGateTimeLine();
         List<Integer> times = new ArrayList<>(timeline.keySet());

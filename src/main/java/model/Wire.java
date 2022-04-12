@@ -29,7 +29,8 @@ public class Wire {
         return source;
     }
 
-    public String getName() {
+    @Override
+    public String toString() {
         return name;
     }
 }
