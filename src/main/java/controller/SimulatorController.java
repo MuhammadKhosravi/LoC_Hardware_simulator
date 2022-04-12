@@ -1,6 +1,5 @@
 package controller;
 
-import com.github.sh0nk.matplotlib4j.Plot;
 import controller.exception.simulatorException.InvalidTimeException;
 import controller.exception.simulatorException.WireNotDeclaredException;
 import model.CircuitGrath;
@@ -37,18 +36,17 @@ public class SimulatorController implements Controller {
         int endTime = Integer.parseInt(endTimeSt);
         int step = Integer.parseInt(stepSt);
 
-        if (startTime > endTime){
+        if (startTime > endTime) {
             throw new InvalidTimeException();
         }
         Wire wire = memory.getNameWireMap().get(wireSt);
-
-        Map<Integer, Boolean> timeline = wire.getSource().getGateTimeLine();
-        List<Integer> times = new ArrayList<>(timeline.keySet());
         if (wire == null) {
             throw new WireNotDeclaredException(wireSt);
         }
 
-        List<Pair<Integer, Boolean>> timeline = wire.getSource().getGateTimeLine();
+
+        Map<Integer, Boolean> timeline = wire.getSource().getGateTimeLine();
+        List<Integer> times = new ArrayList<>(timeline.keySet());
         ArrayList<Pair<Integer, Integer>> dataTable = new ArrayList<>();
         for (int i = startTime; i < endTime; i += step) {
             int index = binarySearch(times, i);

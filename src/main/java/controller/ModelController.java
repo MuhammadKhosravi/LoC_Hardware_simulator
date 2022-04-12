@@ -1,7 +1,6 @@
 package controller;
 
 import controller.exception.logicalException.InvalidInputException;
-import controller.exception.logicalException.RepeatedInputException;
 import controller.exception.modelingException.InputInOutputException;
 import controller.exception.modelingException.InsufficientInputException;
 import controller.exception.modelingException.WireNotDefinedException;
@@ -32,11 +31,12 @@ public class ModelController implements Controller {
     }
 
     public void defineWire(String name, int line) {
-        if (tryGetWire(name, line) != null) {
-            throw new RepeatedInputException(line);
+        try {
+            tryGetWire(name, line);
+        } catch (WireNotDefinedException e) {
+            Wire wire = new Wire(name, false);
+            newInputs.put(name, wire);
         }
-        Wire wire = new Wire(name, false);
-        newInputs.put(name, wire);
     }
 
     public void createAndGate(String output, String delay, String[] inputs, int line) {
