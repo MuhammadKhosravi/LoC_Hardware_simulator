@@ -42,7 +42,7 @@ public class SimulatorController implements Controller {
             int index = binarySearch(times, i);
             if (index < 0) dataTable.add(new Pair<>(i, -1));
             else {
-                int parsedVal = timeline.get(index) ? 1 : 0;
+                int parsedVal = timeline.get(times.get(index)) ? 1 : 0;
                 dataTable.add(new Pair<>(i, parsedVal));
             }
 
@@ -50,7 +50,20 @@ public class SimulatorController implements Controller {
         return dataTable;
     }
 
-    public XYChart drawPlot(String wireName) {
+    public XYChart drawWirePlot(String wireName) {
+        XYChart chart = new XYChartBuilder().theme(Styler.ChartTheme.GGPlot2).build();
+        styleChart(chart);
+        createSingleSeries(wireName, chart);
+        return chart;
+    }
+
+    private void styleChart(XYChart chart) {
+        chart.getStyler().setPlotBackgroundColor(Color.WHITE);
+        chart.getStyler().setYAxisTicksVisible(false);
+        chart.getStyler().setXAxisTickMarkSpacingHint(10);
+    }
+
+    private void createSingleSeries(String wireName, XYChart chart) {
         Wire wire = memory.getNameWireMap().get(wireName);
         Gate gate = wire.getSource();
 
@@ -58,24 +71,34 @@ public class SimulatorController implements Controller {
         List<Integer> xAxis = new ArrayList<>();
         List<Integer> yAxis = new ArrayList<>();
         initScales(timeLine, xAxis, yAxis);
+        chart.addSeries("wire " + wireName, xAxis, yAxis);
+    }
 
-
+    public XYChart drawCircuitPlot() {
         XYChart chart = new XYChartBuilder().theme(Styler.ChartTheme.GGPlot2).build();
-        chart.addSeries("Oscillation", xAxis, yAxis);
-        chart.getStyler().setSeriesColors(new Color[]{Color.RED});
-        chart.getStyler().setPlotBackgroundColor(Color.WHITE);
-        chart.getStyler().setYAxisTicksVisible(false);
+        styleChart(chart);
+        memory.getNameWireMap().forEach((k, v) -> {
+            if (v.getSource() != null)
+                createSingleSeries(k, chart);
+        });
         return chart;
     }
+
 
     private void initScales(Map<Integer, Boolean> timeLine, List<Integer> xAxis, List<Integer> yAxis) {
         timeLine.forEach((k, v) -> {
             if (xAxis.size() != 0) {
+                int value = v ? 1 : 0;
+                if (value != yAxis.get(yAxis.size() - 1)) {
+                    xAxis.add(k);
+                    yAxis.add(yAxis.get(yAxis.size() - 1));
+                    xAxis.add(k);
+                    yAxis.add(v ? 1 : 0);
+                }
+            } else {
                 xAxis.add(k);
-                yAxis.add(yAxis.get(yAxis.size() - 1));
+                yAxis.add(v ? 1 : 0);
             }
-            xAxis.add(k);
-            yAxis.add(v ? 1 : 0);
         });
 
         xAxis.add(xAxis.get(xAxis.size() - 1) + 1);

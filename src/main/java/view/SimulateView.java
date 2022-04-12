@@ -68,20 +68,13 @@ public class SimulateView implements View {
                                         matcher.group("step"));
                                 outputs.add(output);
                             }
-                            case SIMULATE_PLOT -> {
-                                XYChart chart = controller.drawPlot(matcher.group("wire"));
-                                javax.swing.SwingUtilities.invokeLater(() -> {
-
-                                    JFrame frame = new JFrame("Wire");
-                                    frame.setLayout(new BorderLayout());
-                                    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-                                    JPanel chartPanel = new XChartPanel<>(chart);
-                                    frame.add(chartPanel, BorderLayout.CENTER);
-                                    chartPanel.setBackground(Color.BLACK);
-                                    frame.pack();
-                                    frame.setVisible(true);
-                                });
+                            case SIMULATE_WIRE_PLOT -> {
+                                XYChart chart = controller.drawWirePlot(matcher.group("wire"));
+                                createJframe(chart);
+                            }
+                            case SIMULATE_CIRCUIT_PLOT -> {
+                                XYChart chart = controller.drawCircuitPlot();
+                                createJframe(chart);
                             }
                         }
                     } catch (Exception e) {
@@ -95,6 +88,21 @@ public class SimulateView implements View {
         if (!showErrors(exceptions)) {
             displayOutputs(outputs);
         }
+    }
+
+    private void createJframe(XYChart chart) {
+        SwingUtilities.invokeLater(() -> {
+
+            JFrame frame = new JFrame("Wire");
+            frame.setLayout(new BorderLayout());
+            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+            JPanel chartPanel = new XChartPanel<>(chart);
+            frame.add(chartPanel, BorderLayout.CENTER);
+            chartPanel.setBackground(Color.BLACK);
+            frame.pack();
+            frame.setVisible(true);
+        });
     }
 
     private void displayOutputs(List<List<Pair<Integer, Integer>>> outputs) {
