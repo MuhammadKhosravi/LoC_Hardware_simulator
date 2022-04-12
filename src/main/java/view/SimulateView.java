@@ -57,7 +57,8 @@ public class SimulateView implements View {
     @Override
     public void execute(List<String> commands) {
         List<Exception> exceptions = new ArrayList<>();
-        ArrayList<List<Pair<Integer, Integer>>> outputs = new ArrayList<>();
+        List<List<Pair<Integer, Integer>>> outputs = new ArrayList<>();
+        List<XYChart> charts = new ArrayList<>();
         for (int i = 0; i < commands.size(); i++) {
             boolean isValid = false;
 
@@ -76,11 +77,11 @@ public class SimulateView implements View {
                             }
                             case SIMULATE_WIRE_PLOT -> {
                                 XYChart chart = controller.drawWirePlot(matcher.group("wire"));
-                                createJframe(chart);
+                                charts.add(chart);
                             }
                             case SIMULATE_CIRCUIT_PLOT -> {
                                 XYChart chart = controller.drawCircuitPlot();
-                                createJframe(chart);
+                                charts.add(chart);
                             }
                         }
                     } catch (Exception e) {
@@ -93,7 +94,12 @@ public class SimulateView implements View {
 
         if (!showErrors(exceptions)) {
             displayOutputs(outputs);
+            displayCharts(charts);
         }
+    }
+
+    private void displayCharts(List<XYChart> charts) {
+        charts.forEach(this::createJframe);
     }
 
     private void createJframe(XYChart chart) {
@@ -102,7 +108,7 @@ public class SimulateView implements View {
             JFrame frame = new JFrame("Wire");
             frame.setLayout(new BorderLayout());
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
+            frame.setIconImage(Statics.icon.getImage());
             JPanel chartPanel = new XChartPanel<>(chart);
             frame.add(chartPanel, BorderLayout.CENTER);
             chartPanel.setBackground(Color.BLACK);

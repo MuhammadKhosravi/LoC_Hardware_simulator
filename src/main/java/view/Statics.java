@@ -6,13 +6,14 @@ import model.Instructions.ModelingInstruction;
 import model.Instructions.SimulateInstruction;
 import model.Pair;
 
+import javax.swing.*;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Statics {
     public static final boolean IS_GUID_NEEDED = false;
-
+    public static ImageIcon icon = new ImageIcon("LOGO.png");
 
     public static final String MODEL_START = "start modeling";
     public static final String MODEL_FINISH = "finish modeling";
@@ -107,6 +108,8 @@ public class Statics {
                     Available instructions :
                     1) sim ([wire_name], [start_time], [end_time], [step])
                     2) finish simulate
+                    3) plot wire
+                    4) get circuit plot
                     """);
 
         }

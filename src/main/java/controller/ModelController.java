@@ -36,7 +36,7 @@ public class ModelController implements Controller {
             tryGetWire(name, line);
             throw new RepeatedInputException(line);
         } catch (WireNotDefinedException wireNotDefinedException){
-            Wire wire = new Wire(name, false);
+            Wire wire = new Wire(name);
             newInputs.put(name, wire);
         }
     }

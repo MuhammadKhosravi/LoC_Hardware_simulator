@@ -5,12 +5,10 @@ import model.logicGates.Gate;
 public class Wire {
     private final String name;
     private boolean value;
-    private boolean isInput;
     private Gate source;
 
-    public Wire(String name , boolean isInput) {
+    public Wire(String name) {
         this.name = name;
-        this.isInput = isInput;
     }
 
     public boolean isValue() {

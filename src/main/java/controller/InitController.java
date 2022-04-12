@@ -24,7 +24,7 @@ public class InitController implements Controller {
         if (intValue > 1) {
             throw new InvalidInputException(line);
         }
-        Wire wire = new Wire(name, true);
+        Wire wire = new Wire(name);
         wire.setValue(intValue == 1);
         newInputs.put(name, wire);
     }
