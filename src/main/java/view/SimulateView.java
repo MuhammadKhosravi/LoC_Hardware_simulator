@@ -31,7 +31,12 @@ public class SimulateView implements View {
 
     @Override
     public boolean showErrors(List<Exception> exceptions) {
-        return false;
+        if (exceptions.size() == 0) return false;
+        System.out.println("simulation failed!");
+        for (Exception exception : exceptions) {
+            System.out.println(exception.getMessage());
+        }
+        return true;
     }
 
     @Override
@@ -59,6 +64,7 @@ public class SimulateView implements View {
                     try {
                         switch (simulateInstruction.getValue()) {
                             case SIMULATE_INSTRUCTION -> {
+                                isValid = true;
                                 ArrayList<Pair<Integer, Integer>> output = controller.sim(matcher.group("wire"),
                                         matcher.group("start"),
                                         matcher.group("finish"),
@@ -66,6 +72,7 @@ public class SimulateView implements View {
                                 outputs.add(output);
                             }
                             case SIMULATE_PLOT -> {
+                                isValid = true;
                                 Plot plot = controller.drawPlot(matcher.group("wire"));
                                 plot.show();
                             }

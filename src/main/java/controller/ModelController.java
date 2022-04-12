@@ -32,11 +32,13 @@ public class ModelController implements Controller {
     }
 
     public void defineWire(String name, int line) {
-        if (tryGetWire(name, line) != null) {
+        try {
+            tryGetWire(name, line);
             throw new RepeatedInputException(line);
+        } catch (WireNotDefinedException wireNotDefinedException){
+            Wire wire = new Wire(name, false);
+            newInputs.put(name, wire);
         }
-        Wire wire = new Wire(name, false);
-        newInputs.put(name, wire);
     }
 
     public void createAndGate(String output, String delay, String[] inputs, int line) {
@@ -131,7 +133,9 @@ public class ModelController implements Controller {
     private Wire tryGetWire(String wireName, int line) {
         Wire wire = memory.getNameWireMap().get(wireName);
         if (wire == null) wire = newInputs.get(wireName);
-        if (wire == null) throw new WireNotDefinedException(wireName, line);
+        if (wire == null) {
+            throw new WireNotDefinedException(wireName, line);
+        }
         return wire;
     }
 
