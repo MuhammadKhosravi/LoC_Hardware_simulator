@@ -2,12 +2,16 @@ package controller;
 
 import controller.exception.logicalException.InvalidInputException;
 import controller.exception.logicalException.RepeatedInputException;
+import controller.exception.modelingException.InputInOutputException;
+import controller.exception.modelingException.InsufficientInputException;
+import controller.exception.modelingException.WireNotDefinedException;
 import model.Memory;
 import model.Pair;
 import model.Wire;
 import model.logicGates.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -28,69 +32,79 @@ public class ModelController implements Controller {
     }
 
     public void defineWire(String name, int line) {
-        if (tryGetWire(name) != null) {
+        if (tryGetWire(name, line) != null) {
             throw new RepeatedInputException(line);
         }
         Wire wire = new Wire(name, false);
         newInputs.put(name, wire);
     }
 
-    //TODO implement exceptions
     public void createAndGate(String output, String delay, String[] inputs, int line) {
-        Wire wireOutput = tryGetWire(output);
-        Wire[] wireInputs = getWireInputs(inputs);
+        Wire wireOutput = tryGetWire(output, line);
+        Wire[] wireInputs = getWireInputs(inputs, "AND",line);
         int intDelay = Integer.parseInt(delay);
+
+        checkForInputInOutputException(inputs, output, "AND", line);
 
         Gate gate = new AndGate(wireOutput, intDelay, wireInputs);
         newGates.add(gate);
         wireOutput.setSource(gate);
     }
 
-    //TODO implement exceptions
     public void createOrGate(String output, String delay, String[] inputs, int line) {
-        Wire wireOutput = tryGetWire(output);
-        Wire[] wireInputs = getWireInputs(inputs);
+        Wire wireOutput = tryGetWire(output, line);
+        Wire[] wireInputs = getWireInputs(inputs, "OR", line);
         int intDelay = Integer.parseInt(delay);
+
+        checkForInputInOutputException(inputs, output, "OR", line);
 
         Gate gate = new OrGate(wireOutput, intDelay, wireInputs);
         newGates.add(gate);
         wireOutput.setSource(gate);
     }
 
-    //TODO implement exceptions
+    private void checkForInputInOutputException(String[] inputs, String output, String gate, int line) {
+        if (Arrays.asList(inputs).contains(output)) {
+            throw new InputInOutputException(gate, output, line);
+        }
+    }
+
     public void createNandGate(String output, String delay, String[] inputs, int line) {
-        Wire wireOutput = tryGetWire(output);
-        Wire[] wireInputs = getWireInputs(inputs);
+        Wire wireOutput = tryGetWire(output, line);
+        Wire[] wireInputs = getWireInputs(inputs, "NAND", line);
         int intDelay = Integer.parseInt(delay);
+
+        checkForInputInOutputException(inputs, output, "NAND", line);
 
         Gate gate = new NandGate(wireOutput, intDelay, wireInputs);
         newGates.add(gate);
         wireOutput.setSource(gate);
     }
 
-    //TODO implement exceptions
     public void createXorGate(String output, String delay, String[] inputs, int line) {
-        Wire wireOutput = tryGetWire(output);
-        Wire[] wireInputs = getWireInputs(inputs);
+        Wire wireOutput = tryGetWire(output, line);
+        Wire[] wireInputs = getWireInputs(inputs, "XOR", line);
         int intDelay = Integer.parseInt(delay);
+
+        checkForInputInOutputException(inputs, output, "XOR", line);
 
         Gate gate = new XorGate(wireOutput, intDelay, wireInputs);
         newGates.add(gate);
         wireOutput.setSource(gate);
     }
 
-    //TODO implement exceptions
     public void createNorGate(String output, String delay, String[] inputs, int line) {
-        Wire wireOutput = tryGetWire(output);
-        Wire[] wireInputs = getWireInputs(inputs);
+        Wire wireOutput = tryGetWire(output, line);
+        Wire[] wireInputs = getWireInputs(inputs, "NOR", line);
         int intDelay = Integer.parseInt(delay);
+
+        checkForInputInOutputException(inputs, output, "NOR", line);
 
         Gate gate = new NorGate(wireOutput, intDelay, wireInputs);
         newGates.add(gate);
         wireOutput.setSource(gate);
     }
 
-    //TODO implement exceptions
     public void updateValue(String wireName, String time, String value, int line) {
         int intTime = Integer.parseInt(time);
         int intValue = Integer.parseInt(value);
@@ -99,22 +113,25 @@ public class ModelController implements Controller {
         }
         boolean boolVal = value.equals("1");
 
-        Wire wire = tryGetWire(wireName);
+        Wire wire = tryGetWire(wireName, line);
         memory.getChangeStatusMap().put(intTime, new Pair<>(wire, boolVal));
     }
 
-    private Wire[] getWireInputs(String[] inputs) {
+    private Wire[] getWireInputs(String[] inputs, String gate, int line) {
         Wire[] wireInputs = new Wire[inputs.length];
         for (int i = 0; i < inputs.length; i++) {
-            wireInputs[i] = tryGetWire(inputs[i]);
+            wireInputs[i] = tryGetWire(inputs[i], line);
+        }
+        if (inputs.length < 2) {
+            throw new InsufficientInputException(gate, line);
         }
         return wireInputs;
     }
 
-    private Wire tryGetWire(String wireName) {
+    private Wire tryGetWire(String wireName, int line) {
         Wire wire = memory.getNameWireMap().get(wireName);
         if (wire == null) wire = newInputs.get(wireName);
-        //ToDO throw execution for not found wire
+        if (wire == null) throw new WireNotDefinedException(wireName, line);
         return wire;
     }
 
