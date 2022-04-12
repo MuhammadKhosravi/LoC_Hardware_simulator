@@ -1,6 +1,7 @@
 package controller;
 
 import controller.exception.logicalException.InvalidInputException;
+import controller.exception.logicalException.RepeatedInputException;
 import controller.exception.modelingException.InputInOutputException;
 import controller.exception.modelingException.InsufficientInputException;
 import controller.exception.modelingException.WireNotDefinedException;
