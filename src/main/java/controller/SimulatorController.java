@@ -1,11 +1,12 @@
 package controller;
 
-import com.github.sh0nk.matplotlib4j.Plot;
 import model.CircuitGrath;
 import model.Memory;
 import model.Pair;
 import model.Wire;
 import model.logicGates.Gate;
+import org.knowm.xchart.QuickChart;
+import org.knowm.xchart.XYChart;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -32,13 +33,14 @@ public class SimulatorController implements Controller {
         int step = Integer.parseInt(stepSt);
         Wire wire = memory.getNameWireMap().get(wireSt);
 
-        List<Pair<Integer, Boolean>> timeline = wire.getSource().getGateTimeLine();
+        Map<Integer, Boolean> timeline = wire.getSource().getGateTimeLine();
+        List<Integer> times = new ArrayList<>(timeline.keySet());
         ArrayList<Pair<Integer, Integer>> dataTable = new ArrayList<>();
         for (int i = startTime; i < endTime; i += step) {
-            int index = binarySearch(timeline, i);
+            int index = binarySearch(times, i);
             if (index < 0) dataTable.add(new Pair<>(i, -1));
             else {
-                int parsedVal = timeline.get(index).getValue() ? 1 : 0;
+                int parsedVal = timeline.get(index) ? 1 : 0;
                 dataTable.add(new Pair<>(i, parsedVal));
             }
 
@@ -46,43 +48,46 @@ public class SimulatorController implements Controller {
         return dataTable;
     }
 
-    public Plot drawPlot(String wireName) {
+    public XYChart drawPlot(String wireName) {
         Wire wire = memory.getNameWireMap().get(wireName);
         Gate gate = wire.getSource();
-        List<Pair<Integer, Boolean>> timeLine = gate.getGateTimeLine();
-        List<Double> xAxis = new ArrayList<>();
-        List<Double> yAxis = new ArrayList<>();
-        xAxis.add(Double.valueOf(timeLine.get(0).getKey()));
-        yAxis.add((double) (timeLine.get(0).getValue() ? 1 : 0));
-        timeLine.stream().skip(1).forEach(p -> {
-            xAxis.add(Double.valueOf(p.getKey()));
-            xAxis.add(Double.valueOf(p.getKey()));
-            double value = p.getValue() ? 1 : 0;
-            yAxis.add(yAxis.get(yAxis.size() - 1));
-            yAxis.add(value);
+
+        Map<Integer, Boolean> timeLine = gate.getGateTimeLine();
+        List<Integer> xAxis = new ArrayList<>();
+        List<Integer> yAxis = new ArrayList<>();
+        initScales(timeLine, xAxis, yAxis);
+
+
+        XYChart chart = QuickChart.getChart(wireName + " plot", "Time", "Value", "Oscillation", xAxis, yAxis);
+        chart.getStyler().setYAxisTicksVisible(false);
+        return chart;
+    }
+
+    private void initScales(Map<Integer, Boolean> timeLine, List<Integer> xAxis, List<Integer> yAxis) {
+        timeLine.forEach((k, v) -> {
+            if (xAxis.size() != 0) {
+                xAxis.add(k);
+                yAxis.add(yAxis.get(yAxis.size() - 1));
+            }
+            xAxis.add(k);
+            yAxis.add(v ? 1 : 0);
         });
+
         xAxis.add(xAxis.get(xAxis.size() - 1) + 1);
         yAxis.add(yAxis.get(yAxis.size() - 1));
-        Plot plot = Plot.create();
-        plot.title("Wire " + wireName);
-        plot.legend().loc("upper right");
-        plot.plot().add(xAxis, yAxis);
-        plot.ylim(-0.4, 1.4);
-        plot.plot().color("blue").linewidth(2.5).linestyle("-");
-        return plot;
     }
 
 
-    private int binarySearch(List<Pair<Integer, Boolean>> arr, int x) {
+    private int binarySearch(List<Integer> arr, int x) {
         int left = 0, right = arr.size() - 1;
 
         while (left <= right) {
             int mid = left + (right - left) / 2;
 
-            if (arr.get(mid).getKey() == x)
+            if (arr.get(mid) == x)
                 return mid;
 
-            if (arr.get(mid).getKey() < x)
+            if (arr.get(mid) < x)
                 left = mid + 1;
 
             else

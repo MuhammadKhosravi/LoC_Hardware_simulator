@@ -1,11 +1,12 @@
 package view;
 
-import com.github.sh0nk.matplotlib4j.Plot;
 import controller.SimulatorController;
 import controller.exception.BadSyntaxException;
 import model.HelpType;
 import model.Instructions.SimulateInstruction;
 import model.Pair;
+import org.knowm.xchart.SwingWrapper;
+import org.knowm.xchart.XYChart;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -66,8 +67,8 @@ public class SimulateView implements View {
                                 outputs.add(output);
                             }
                             case SIMULATE_PLOT -> {
-                                Plot plot = controller.drawPlot(matcher.group("wire"));
-                                plot.show();
+                                XYChart chart = controller.drawPlot(matcher.group("wire"));
+                                new SwingWrapper(chart).displayChart();
                             }
                         }
                     } catch (Exception e) {
