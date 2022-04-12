@@ -8,7 +8,11 @@ import model.Memory;
 import model.Pair;
 import model.Wire;
 import model.logicGates.Gate;
+import org.knowm.xchart.XYChart;
+import org.knowm.xchart.XYChartBuilder;
+import org.knowm.xchart.style.Styler;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -38,6 +42,8 @@ public class SimulatorController implements Controller {
         }
         Wire wire = memory.getNameWireMap().get(wireSt);
 
+        Map<Integer, Boolean> timeline = wire.getSource().getGateTimeLine();
+        List<Integer> times = new ArrayList<>(timeline.keySet());
         if (wire == null) {
             throw new WireNotDeclaredException(wireSt);
         }
@@ -45,10 +51,10 @@ public class SimulatorController implements Controller {
         List<Pair<Integer, Boolean>> timeline = wire.getSource().getGateTimeLine();
         ArrayList<Pair<Integer, Integer>> dataTable = new ArrayList<>();
         for (int i = startTime; i < endTime; i += step) {
-            int index = binarySearch(timeline, i);
+            int index = binarySearch(times, i);
             if (index < 0) dataTable.add(new Pair<>(i, -1));
             else {
-                int parsedVal = timeline.get(index).getValue() ? 1 : 0;
+                int parsedVal = timeline.get(times.get(index)) ? 1 : 0;
                 dataTable.add(new Pair<>(i, parsedVal));
             }
 
@@ -56,43 +62,72 @@ public class SimulatorController implements Controller {
         return dataTable;
     }
 
-    public Plot drawPlot(String wireName) {
+    public XYChart drawWirePlot(String wireName) {
+        XYChart chart = new XYChartBuilder().theme(Styler.ChartTheme.GGPlot2).build();
+        styleChart(chart);
+        createSingleSeries(wireName, chart);
+        return chart;
+    }
+
+    private void styleChart(XYChart chart) {
+        chart.getStyler().setPlotBackgroundColor(Color.WHITE);
+        chart.getStyler().setYAxisTicksVisible(false);
+        chart.getStyler().setXAxisTickMarkSpacingHint(10);
+    }
+
+    private void createSingleSeries(String wireName, XYChart chart) {
         Wire wire = memory.getNameWireMap().get(wireName);
         Gate gate = wire.getSource();
-        List<Pair<Integer, Boolean>> timeLine = gate.getGateTimeLine();
-        List<Double> xAxis = new ArrayList<>();
-        List<Double> yAxis = new ArrayList<>();
-        xAxis.add(Double.valueOf(timeLine.get(0).getKey()));
-        yAxis.add((double) (timeLine.get(0).getValue() ? 1 : 0));
-        timeLine.stream().skip(1).forEach(p -> {
-            xAxis.add(Double.valueOf(p.getKey()));
-            xAxis.add(Double.valueOf(p.getKey()));
-            double value = p.getValue() ? 1 : 0;
-            yAxis.add(yAxis.get(yAxis.size() - 1));
-            yAxis.add(value);
+
+        Map<Integer, Boolean> timeLine = gate.getGateTimeLine();
+        List<Integer> xAxis = new ArrayList<>();
+        List<Integer> yAxis = new ArrayList<>();
+        initScales(timeLine, xAxis, yAxis);
+        chart.addSeries("wire " + wireName, xAxis, yAxis);
+    }
+
+    public XYChart drawCircuitPlot() {
+        XYChart chart = new XYChartBuilder().theme(Styler.ChartTheme.GGPlot2).build();
+        styleChart(chart);
+        memory.getNameWireMap().forEach((k, v) -> {
+            if (v.getSource() != null)
+                createSingleSeries(k, chart);
         });
-        xAxis.add(xAxis.get(xAxis.size() - 1) + 1);
-        yAxis.add(yAxis.get(yAxis.size() - 1));
-        Plot plot = Plot.create();
-        plot.title("Wire " + wireName);
-        plot.legend().loc("upper right");
-        plot.plot().add(xAxis, yAxis);
-        plot.ylim(-0.4, 1.4);
-        plot.plot().color("blue").linewidth(2.5).linestyle("-");
-        return plot;
+        return chart;
     }
 
 
-    private int binarySearch(List<Pair<Integer, Boolean>> arr, int x) {
+    private void initScales(Map<Integer, Boolean> timeLine, List<Integer> xAxis, List<Integer> yAxis) {
+        timeLine.forEach((k, v) -> {
+            if (xAxis.size() != 0) {
+                int value = v ? 1 : 0;
+                if (value != yAxis.get(yAxis.size() - 1)) {
+                    xAxis.add(k);
+                    yAxis.add(yAxis.get(yAxis.size() - 1));
+                    xAxis.add(k);
+                    yAxis.add(v ? 1 : 0);
+                }
+            } else {
+                xAxis.add(k);
+                yAxis.add(v ? 1 : 0);
+            }
+        });
+
+        xAxis.add(xAxis.get(xAxis.size() - 1) + 1);
+        yAxis.add(yAxis.get(yAxis.size() - 1));
+    }
+
+
+    private int binarySearch(List<Integer> arr, int x) {
         int left = 0, right = arr.size() - 1;
 
         while (left <= right) {
             int mid = left + (right - left) / 2;
 
-            if (arr.get(mid).getKey() == x)
+            if (arr.get(mid) == x)
                 return mid;
 
-            if (arr.get(mid).getKey() < x)
+            if (arr.get(mid) < x)
                 left = mid + 1;
 
             else

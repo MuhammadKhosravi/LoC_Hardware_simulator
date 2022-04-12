@@ -1,11 +1,10 @@
 package model.logicGates;
 
 
-import model.Pair;
 import model.Wire;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 public abstract class Gate {
     private final Wire[] inputs;
@@ -13,14 +12,14 @@ public abstract class Gate {
 
     // time is measured in milliseconds
     private final int delay;
-    private final List<Pair<Integer, Boolean>> gateTimeLine;
+    private final Map<Integer, Boolean> gateTimeLine;
 
 
     public Gate(Wire output, int delay, Wire... inputs) {
         this.output = output;
         this.delay = delay;
         this.inputs = inputs;
-        this.gateTimeLine = new ArrayList<>();
+        this.gateTimeLine = new TreeMap<>();
     }
 
     public abstract void calculateOutput();
@@ -40,7 +39,7 @@ public abstract class Gate {
         return inputs;
     }
 
-    public List<Pair<Integer, Boolean>> getGateTimeLine() {
+    public Map<Integer, Boolean> getGateTimeLine() {
         return gateTimeLine;
     }
 

@@ -48,7 +48,9 @@ public class CircuitGrath {
 
 
     public void pushValues() {
-        allNodes.forEach(n -> n.nodeGate.getGateTimeLine().add(new Pair<>(n.outputTime, n.output)));
+        allNodes.forEach(n -> {
+            n.nodeGate.getGateTimeLine().put(n.outputTime, n.output);
+        });
     }
 
 

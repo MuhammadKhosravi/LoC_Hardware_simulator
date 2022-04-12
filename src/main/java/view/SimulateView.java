@@ -1,12 +1,15 @@
 package view;
 
-import com.github.sh0nk.matplotlib4j.Plot;
 import controller.SimulatorController;
 import controller.exception.BadSyntaxException;
 import model.HelpType;
 import model.Instructions.SimulateInstruction;
 import model.Pair;
+import org.knowm.xchart.XChartPanel;
+import org.knowm.xchart.XYChart;
 
+import javax.swing.*;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -65,9 +68,13 @@ public class SimulateView implements View {
                                         matcher.group("step"));
                                 outputs.add(output);
                             }
-                            case SIMULATE_PLOT -> {
-                                Plot plot = controller.drawPlot(matcher.group("wire"));
-                                plot.show();
+                            case SIMULATE_WIRE_PLOT -> {
+                                XYChart chart = controller.drawWirePlot(matcher.group("wire"));
+                                createJframe(chart);
+                            }
+                            case SIMULATE_CIRCUIT_PLOT -> {
+                                XYChart chart = controller.drawCircuitPlot();
+                                createJframe(chart);
                             }
                         }
                     } catch (Exception e) {
@@ -83,6 +90,21 @@ public class SimulateView implements View {
         }
     }
 
+    private void createJframe(XYChart chart) {
+        SwingUtilities.invokeLater(() -> {
+
+            JFrame frame = new JFrame("Wire");
+            frame.setLayout(new BorderLayout());
+            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+            JPanel chartPanel = new XChartPanel<>(chart);
+            frame.add(chartPanel, BorderLayout.CENTER);
+            chartPanel.setBackground(Color.BLACK);
+            frame.pack();
+            frame.setVisible(true);
+        });
+    }
+
     private void displayOutputs(List<List<Pair<Integer, Integer>>> outputs) {
         for (List<Pair<Integer, Integer>> output : outputs) {
             for (Pair<Integer, Integer> integerIntegerPair : output) {
@@ -91,4 +113,6 @@ public class SimulateView implements View {
             System.out.println("------------------------------------");
         }
     }
+
+
 }
