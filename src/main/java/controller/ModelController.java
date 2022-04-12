@@ -33,7 +33,8 @@ public class ModelController implements Controller {
     public void defineWire(String name, int line) {
         try {
             tryGetWire(name, line);
-        } catch (WireNotDefinedException e) {
+            throw new RepeatedInputException(line);
+        } catch (WireNotDefinedException wireNotDefinedException){
             Wire wire = new Wire(name, false);
             newInputs.put(name, wire);
         }
@@ -131,7 +132,9 @@ public class ModelController implements Controller {
     private Wire tryGetWire(String wireName, int line) {
         Wire wire = memory.getNameWireMap().get(wireName);
         if (wire == null) wire = newInputs.get(wireName);
-        if (wire == null) throw new WireNotDefinedException(wireName, line);
+        if (wire == null) {
+            throw new WireNotDefinedException(wireName, line);
+        }
         return wire;
     }
 

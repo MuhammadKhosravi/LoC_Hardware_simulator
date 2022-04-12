@@ -34,7 +34,12 @@ public class SimulateView implements View {
 
     @Override
     public boolean showErrors(List<Exception> exceptions) {
-        return false;
+        if (exceptions.size() == 0) return false;
+        System.out.println("simulation failed!");
+        for (Exception exception : exceptions) {
+            System.out.println(exception.getMessage());
+        }
+        return true;
     }
 
     @Override
@@ -113,6 +118,4 @@ public class SimulateView implements View {
             System.out.println("------------------------------------");
         }
     }
-
-
 }

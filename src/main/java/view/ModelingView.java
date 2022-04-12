@@ -60,6 +60,7 @@ public class ModelingView implements View {
             }
             if (!isValid) exceptions.add(new BadSyntaxException(i + 1));
         }
+        if (showErrors(exceptions)) controller.undo();
     }
 
     private void findCommand(List<Exception> exceptions, int line, Pair<String, ModelingInstruction> modelingInstruction,
